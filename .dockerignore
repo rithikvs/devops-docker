@@ -1,0 +1,8 @@
+*.md
+.git
+.gitignore
+.env.example
+scripts/
+__pycache__
+.DS_Store
+node_modules/

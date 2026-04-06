@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  nginx-network1:
+    image: nginx:latest
+    container_name: nginx-net1
+    networks:
+      - network1
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx-net1-index.html:/usr/share/nginx/html/index.html
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  nginx-network2:
+    image: nginx:latest
+    container_name: nginx-net2
+    networks:
+      - network2
+    ports:
+      - "8082:80"
+    volumes:
+      - ./nginx-net2-index.html:/usr/share/nginx/html/index.html
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+networks:
+  network1:
+    driver: bridge
+    name: network1
+  network2:
+    driver: bridge
+    name: network2
