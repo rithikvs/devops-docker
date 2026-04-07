@@ -1,0 +1,38 @@
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+.env.local
+
+# Build artifacts
+dist/
+build/
+
+# Test coverage
+coverage/
+.coverage
+
+# Node modules (if used)
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
