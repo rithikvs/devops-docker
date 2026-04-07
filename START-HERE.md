@@ -11,10 +11,7 @@ docker-networking/
 ├── 📋 INTERVIEW-COMMANDS.md      ← READ THIS FIRST (Fresh commands)
 ├── 📋 INTERVIEW-GUIDE.md          ← Detailed explanations
 ├── 📋 QUICK-START.md              ← Quick reference
-├── 📋 COMMANDS-REFERENCE.md       ← Full Docker command reference
 ├── 📋 README.md                   ← Complete documentation
-├── 📋 INDEX.md                    ← Project overview
-├── 📋 SETUP-COMPLETE.md           ← Full setup guide
 │
 ├── 🐳 docker-compose.yml          ← Main configuration
 ├── 🌐 nginx-net1-index.html       ← Container 1 custom page
@@ -185,9 +182,7 @@ curl http://localhost:8082
 | INTERVIEW-COMMANDS.md | Copy-paste for demo | 5 min |
 | INTERVIEW-GUIDE.md | Detailed explanations | 15 min |
 | QUICK-START.md | Quick reference | 2 min |
-| COMMANDS-REFERENCE.md | All Docker commands | 20 min |
-| README.md | Complete docs | 10 min |
-| INDEX.md | Project overview | 3 min |
+| README.md | Complete documentation | 15 min |
 | docker-compose.yml | Configuration | 2 min |
 
 ---
