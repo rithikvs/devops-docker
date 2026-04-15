@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Networking Controller</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🐳 Docker Networking Controller</h1>
+            <p>Web UI to control Docker networking with isolated containers</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Control Panel -->
+            <section class="control-panel">
+                <h2>Controls</h2>
+                <div class="buttons-group">
+                    <!-- Step 1 -->
+                    <button class="btn btn-primary" onclick="createNetworks()">
+                        <span class="step-number">1</span>
+                        Create Networks
+                    </button>
+
+                    <!-- Step 2 -->
+                    <button class="btn btn-primary" onclick="startContainers()">
+                        <span class="step-number">2</span>
+                        Start Containers
+                    </button>
+
+                    <!-- Step 3 -->
+                    <button class="btn btn-warning" onclick="testIsolation()">
+                        <span class="step-number">3</span>
+                        Test Isolation (Before)
+                    </button>
+
+                    <!-- Step 4 -->
+                    <button class="btn btn-info" onclick="connectNetworks()">
+                        <span class="step-number">4</span>
+                        Connect Networks
+                    </button>
+
+                    <!-- Step 5 -->
+                    <button class="btn btn-success" onclick="testCommunication()">
+                        <span class="step-number">5</span>
+                        Test Communication (After)
+                    </button>
+                </div>
+
+                <!-- Cleanup Button -->
+                <div class="cleanup-section">
+                    <button class="btn btn-danger" onclick="cleanup()">
+                        🗑️ Cleanup All
+                    </button>
+                </div>
+            </section>
+
+            <!-- Output Box -->
+            <section class="output-section">
+                <h2>Output Results</h2>
+                <div id="output" class="output-box">
+                    <p class="info-text">Click buttons above to run Docker commands...</p>
+                </div>
+            </section>
+
+            <!-- Status Indicator -->
+            <section class="status-section">
+                <h3>Status</h3>
+                <div class="status-item">
+                    <span class="label">Server:</span>
+                    <span id="serverStatus" class="status-badge offline">Checking...</span>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Docker Networking with Isolated Containers Demo</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

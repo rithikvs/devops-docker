@@ -1,0 +1,15 @@
+{
+  "name": "docker-networking-controller",
+  "version": "1.0.0",
+  "description": "Web UI to control Docker networking project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["docker", "networking", "web-ui"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
