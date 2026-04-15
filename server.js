@@ -37,6 +37,10 @@ function runCommand(command) {
 app.post('/api/create-network1', (req, res) => {
   log('Creating network1...');
   
+  // Remove existing network1 if it exists
+  runCommand('docker network rm network1 2>nul');
+  
+  // Create fresh network1
   const result = runCommand('docker network create network1');
   
   res.json({
@@ -51,6 +55,10 @@ app.post('/api/create-network1', (req, res) => {
 app.post('/api/create-network2', (req, res) => {
   log('Creating network2...');
   
+  // Remove existing network2 if it exists
+  runCommand('docker network rm network2 2>nul');
+  
+  // Create fresh network2
   const result = runCommand('docker network create network2');
   
   res.json({
