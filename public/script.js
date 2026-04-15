@@ -180,10 +180,17 @@ async function checkServerHealth() {
 // ============ API Functions ============
 
 /**
- * Step 1: Create Networks
+ * Step 1a: Create Network1
  */
-function createNetworks() {
-    callAPI('/create-networks', 'Creating Networks');
+function createNetwork1() {
+    callAPI('/create-network1', 'Creating Network1');
+}
+
+/**
+ * Step 1b: Create Network2
+ */
+function createNetwork2() {
+    callAPI('/create-network2', 'Creating Network2');
 }
 
 /**
@@ -244,7 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="output-message">Follow the numbered steps to demonstrate Docker networking:</div>
         <div class="output-details">
             <strong>Workflow:</strong><br>
-            1️⃣ Create two Docker networks (network1, network2)<br>
+            1️⃣a Create Network1<br>
+            1️⃣b Create Network2<br>
             2️⃣ Start two containers in separate networks (c1, c2)<br>
             3️⃣ Test isolation - containers should NOT communicate<br>
             4️⃣ Connect c1 to network2<br>

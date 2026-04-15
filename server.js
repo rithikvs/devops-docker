@@ -33,19 +33,31 @@ function runCommand(command) {
   }
 }
 
-// API Endpoint: Create Networks
-app.post('/api/create-networks', (req, res) => {
-  log('Creating networks...');
+// API Endpoint: Create Network1
+app.post('/api/create-network1', (req, res) => {
+  log('Creating network1...');
   
-  const result1 = runCommand('docker network create network1');
-  const result2 = runCommand('docker network create network2');
+  const result = runCommand('docker network create network1');
   
-  const success = result1.success && result2.success;
   res.json({
-    step: 'Create Networks',
-    success: success,
-    message: success ? '✅ Networks created successfully!' : '❌ Failed to create networks',
-    details: [result1, result2]
+    step: 'Create Network1',
+    success: result.success,
+    message: result.success ? '✅ network1 created successfully!' : '❌ Failed to create network1',
+    details: [result]
+  });
+});
+
+// API Endpoint: Create Network2
+app.post('/api/create-network2', (req, res) => {
+  log('Creating network2...');
+  
+  const result = runCommand('docker network create network2');
+  
+  res.json({
+    step: 'Create Network2',
+    success: result.success,
+    message: result.success ? '✅ network2 created successfully!' : '❌ Failed to create network2',
+    details: [result]
   });
 });
 
