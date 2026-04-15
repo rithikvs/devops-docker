@@ -3,90 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Docker Networking Controller</title>
+    <title>Docker Networking</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1>🐳 Docker Networking Controller</h1>
-            <p>Web UI to control Docker networking with isolated containers</p>
-        </header>
+        <div class="header">
+            <h1>Docker Networking Controller</h1>
+            <p>Test Docker network isolation</p>
+        </div>
 
-        <!-- Main Content -->
-        <main class="main">
-            <!-- Control Panel -->
-            <section class="control-panel">
-                <h2>Controls</h2>
-                <div class="buttons-group">
-                    <!-- Step 1a -->
-                    <button class="btn btn-primary" onclick="createNetwork1()">
-                        <span class="step-number">1a</span>
-                        Create Network1
-                    </button>
-
-                    <!-- Step 1b -->
-                    <button class="btn btn-primary" onclick="createNetwork2()">
-                        <span class="step-number">1b</span>
-                        Create Network2
-                    </button>
-
-                    <!-- Step 2 -->
-                    <button class="btn btn-primary" onclick="startContainers()">
-                        <span class="step-number">2</span>
-                        Start Containers
-                    </button>
-
-                    <!-- Step 3 -->
-                    <button class="btn btn-warning" onclick="testIsolation()">
-                        <span class="step-number">3</span>
-                        Test Isolation (Before)
-                    </button>
-
-                    <!-- Step 4 -->
-                    <button class="btn btn-info" onclick="connectNetworks()">
-                        <span class="step-number">4</span>
-                        Connect Networks
-                    </button>
-
-                    <!-- Step 5 -->
-                    <button class="btn btn-success" onclick="testCommunication()">
-                        <span class="step-number">5</span>
-                        Test Communication (After)
-                    </button>
+        <div class="content">
+            <div class="controls">
+                <h3>Step 1: Create Networks</h3>
+                <div class="button-row">
+                    <button onclick="createNetwork1()">Create Network1</button>
+                    <button onclick="createNetwork2()">Create Network2</button>
                 </div>
 
-                <!-- Cleanup Button -->
-                <div class="cleanup-section">
-                    <button class="btn btn-danger" onclick="cleanup()">
-                        🗑️ Cleanup All
-                    </button>
-                </div>
-            </section>
+                <h3>Step 2: Start Containers</h3>
+                <button class="full-width" onclick="startContainers()">Start Containers</button>
 
-            <!-- Output Box -->
-            <section class="output-section">
-                <h2>Output Results</h2>
-                <div id="output" class="output-box">
-                    <p class="info-text">Click buttons above to run Docker commands...</p>
-                </div>
-            </section>
+                <h3>Step 3: Test Isolation</h3>
+                <button class="full-width" onclick="testIsolation()">Test Isolation (Before)</button>
 
-            <!-- Status Indicator -->
-            <section class="status-section">
-                <h3>Status</h3>
-                <div class="status-item">
-                    <span class="label">Server:</span>
-                    <span id="serverStatus" class="status-badge offline">Checking...</span>
-                </div>
-            </section>
-        </main>
+                <h3>Step 4: Connect Networks</h3>
+                <button class="full-width" onclick="connectNetworks()">Connect Networks</button>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>Docker Networking with Isolated Containers Demo</p>
-        </footer>
+                <h3>Step 5: Test Communication</h3>
+                <button class="full-width" onclick="testCommunication()">Test Communication (After)</button>
+
+                <h3>Cleanup</h3>
+                <button class="full-width danger" onclick="cleanup()">Cleanup All</button>
+            </div>
+
+            <div class="output">
+                <h3>Output</h3>
+                <div id="output" class="output-box"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span id="serverStatus">Server: Checking...</span>
+        </div>
     </div>
 
     <script src="script.js"></script>

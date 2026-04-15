@@ -242,23 +242,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check server health every 5 seconds
     setInterval(checkServerHealth, 5000);
-
-    // Display welcome message
-    const welcomeEntry = document.createElement('div');
-    welcomeEntry.className = 'output-entry info';
-    welcomeEntry.innerHTML = `
-        <div class="output-title">👋 Welcome!</div>
-        <div class="output-message">Follow the numbered steps to demonstrate Docker networking:</div>
-        <div class="output-details">
-            <strong>Workflow:</strong><br>
-            1️⃣a Create Network1<br>
-            1️⃣b Create Network2<br>
-            2️⃣ Start two containers in separate networks (c1, c2)<br>
-            3️⃣ Test isolation - containers should NOT communicate<br>
-            4️⃣ Connect c1 to network2<br>
-            5️⃣ Test communication - containers SHOULD now communicate<br>
-            🗑️ Cleanup when done
-        </div>
-    `;
-    OUTPUT_BOX.appendChild(welcomeEntry);
 });
