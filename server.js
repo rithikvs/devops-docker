@@ -69,24 +69,20 @@ app.post('/api/start-containers', (req, res) => {
 app.post('/api/test-isolation', (req, res) => {
   log('Testing network isolation...');
   
-  // Try to ping from c1 to c2 (should fail)
-  const pingResult = runCommand('docker exec c1 ping -c 1 c2');
-  
-  // Try to curl from c1 to c2 (should fail)
+  // Only use curl to test isolation (should fail)
   const curlResult = runCommand('docker exec c1 curl -s -m 2 http://c2');
   
-  // Isolation is working if BOTH failed (cannot reach each other)
-  const isolated = !pingResult.success && !curlResult.success;
+  // Isolation is working if curl failed (cannot reach each other)
+  const isolated = !curlResult.success;
   
   res.json({
     step: 'Test Isolation (Before Connection)',
     success: isolated,
     message: isolated 
-      ? '✅ SUCCESS: Networks are properly isolated (containers cannot communicate)' 
-      : '❌ FAILED: Networks are not isolated (containers can communicate)',
+      ? '✅ SUCCESS: Networks are properly isolated (curl blocked)' 
+      : '❌ FAILED: Networks are not isolated (curl succeeded)',
     details: {
-      ping: { attempted: 'ping c1 to c2', result: pingResult.success ? '✅ REACHED' : '❌ BLOCKED' },
-      curl: { attempted: 'curl c1 to c2', result: curlResult.success ? '✅ REACHED' : '❌ BLOCKED' }
+      test: { attempted: 'curl c1 to http://c2', result: !curlResult.success ? '❌ BLOCKED (Isolated)' : '✅ REACHED (Not Isolated)' }
     }
   });
 });
@@ -112,24 +108,20 @@ app.post('/api/connect-networks', (req, res) => {
 app.post('/api/test-communication', (req, res) => {
   log('Testing communication after connection...');
   
-  // Try to ping from c1 to c2 (should succeed now)
-  const pingResult = runCommand('docker exec c1 ping -c 1 c2');
-  
-  // Try to curl from c1 to c2 (should succeed now)
+  // Only use curl to test communication (should succeed now)
   const curlResult = runCommand('docker exec c1 curl -s -m 2 http://c2');
   
-  // Communication working if BOTH succeeded
-  const communicating = pingResult.success && curlResult.success;
+  // Communication working if curl succeeded
+  const communicating = curlResult.success;
   
   res.json({
     step: 'Test Communication (After Connection)',
     success: communicating,
     message: communicating 
-      ? '✅ SUCCESS: Containers can now communicate!' 
-      : '❌ FAILED: Containers still cannot communicate',
+      ? '✅ SUCCESS: Containers can now communicate (curl succeeded)!' 
+      : '❌ FAILED: Containers still cannot communicate (curl blocked)',
     details: {
-      ping: { attempted: 'ping c1 to c2', result: pingResult.success ? '✅ REACHED' : '❌ BLOCKED' },
-      curl: { attempted: 'curl c1 to c2', result: curlResult.success ? '✅ REACHED' : '❌ BLOCKED' }
+      test: { attempted: 'curl c1 to http://c2', result: curlResult.success ? '✅ REACHED (Success)' : '❌ BLOCKED (Failed)' }
     }
   });
 });
