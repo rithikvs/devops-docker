@@ -1,12 +1,16 @@
 {
-  "name": "docker-networking-controller",
+  "name": "docker-networking",
   "version": "1.0.0",
-  "description": "Web UI to control Docker networking project",
+  "description": "Docker networking with isolated NGINX containers",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "status": "docker-compose ps"
   },
-  "keywords": ["docker", "networking", "web-ui"],
+  "keywords": ["docker", "networking", "nginx"],
   "author": "",
   "license": "MIT",
   "dependencies": {

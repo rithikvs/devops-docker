@@ -1,4 +1,3 @@
-// Simple Express server to control Docker networking
 const express = require('express');
 const { execSync } = require('child_process');
 const path = require('path');
@@ -7,180 +6,224 @@ const app = express();
 const PORT = 3000;
 
 // Middleware
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname)));
 app.use(express.json());
-
-// Logging helper
-function log(message) {
-  console.log(`[${new Date().toLocaleTimeString()}] ${message}`);
-}
 
 // Helper function to run Docker commands
 function runCommand(command) {
   try {
-    log(`Executing: ${command}`);
+    console.log(`[${new Date().toLocaleTimeString()}] Executing: ${command}`);
     const output = execSync(command, { 
       encoding: 'utf-8',
       shell: true,
       stdio: ['pipe', 'pipe', 'pipe']
     });
-    log(`✅ Success`);
+    console.log(`✅ Success`);
     return { success: true, output: output.trim() };
   } catch (error) {
     const errorMsg = error.stderr ? error.stderr.toString() : error.message;
-    log(`❌ Error: ${errorMsg}`);
+    console.log(`❌ Error: ${errorMsg}`);
     return { success: false, output: errorMsg };
   }
 }
 
-// API Endpoint: Create Network1
-app.post('/api/create-network1', (req, res) => {
-  log('Creating network1...');
+// ===== NETWORK OPERATIONS =====
+
+// Create Network
+app.post('/api/create-network', (req, res) => {
+  const { networkName } = req.body;
+  console.log(`🌐 Creating network: ${networkName}...`);
   
-  // Remove existing network1 if it exists
-  runCommand('docker network rm network1 2>nul');
-  
-  // Create fresh network1
-  const result = runCommand('docker network create network1');
-  
+  const result = runCommand(`docker network create ${networkName}`);
   res.json({
-    step: 'Create Network1',
+    action: 'Create Network',
+    network: networkName,
     success: result.success,
-    message: result.success ? '✅ network1 created successfully!' : '❌ Failed to create network1',
-    details: [result]
+    message: result.success ? `✅ Network "${networkName}" created!` : `❌ Failed to create network`,
+    details: result.output
   });
 });
 
-// API Endpoint: Create Network2
-app.post('/api/create-network2', (req, res) => {
-  log('Creating network2...');
+// Delete Network
+app.post('/api/delete-network', (req, res) => {
+  const { networkName } = req.body;
+  console.log(`🗑️ Deleting network: ${networkName}...`);
   
-  // Remove existing network2 if it exists
-  runCommand('docker network rm network2 2>nul');
-  
-  // Create fresh network2
-  const result = runCommand('docker network create network2');
-  
+  const result = runCommand(`docker network rm ${networkName}`);
   res.json({
-    step: 'Create Network2',
+    action: 'Delete Network',
+    network: networkName,
     success: result.success,
-    message: result.success ? '✅ network2 created successfully!' : '❌ Failed to create network2',
-    details: [result]
+    message: result.success ? `✅ Network "${networkName}" deleted!` : `❌ Failed to delete network`,
+    details: result.output
   });
 });
 
-// API Endpoint: Start Containers
-app.post('/api/start-containers', (req, res) => {
-  log('Starting containers...');
-  
-  const result1 = runCommand('docker run -dit --name c1 --network network1 nginx:latest');
-  const result2 = runCommand('docker run -dit --name c2 --network network2 nginx:latest');
-  
-  const success = result1.success && result2.success;
+// List Networks
+app.get('/api/networks', (req, res) => {
+  console.log('📋 Listing networks...');
+  const result = runCommand('docker network ls --format "table {{.Name}}\t{{.Driver}}\t{{.Scope}}"');
   res.json({
-    step: 'Start Containers',
-    success: success,
-    message: success ? '✅ Containers started successfully!' : '❌ Failed to start containers',
-    details: [result1, result2]
-  });
-});
-
-// API Endpoint: Test Isolation (before connection - should fail)
-app.post('/api/test-isolation', (req, res) => {
-  log('Testing network isolation...');
-  
-  // Only use curl to test isolation (should fail)
-  const curlResult = runCommand('docker exec c1 curl -s -m 2 http://c2');
-  
-  // Isolation is working if curl failed (cannot reach each other)
-  const isolated = !curlResult.success;
-  
-  res.json({
-    step: 'Test Isolation (Before Connection)',
-    success: isolated,
-    message: isolated 
-      ? '✅ SUCCESS: Networks are properly isolated (curl blocked)' 
-      : '❌ FAILED: Networks are not isolated (curl succeeded)',
-    details: {
-      test: { attempted: 'curl c1 to http://c2', result: !curlResult.success ? '❌ BLOCKED (Isolated)' : '✅ REACHED (Not Isolated)' }
-    }
-  });
-});
-
-// API Endpoint: Connect Networks
-app.post('/api/connect-networks', (req, res) => {
-  log('Connecting networks...');
-  
-  // Connect container c1 to network2
-  const result = runCommand('docker network connect network2 c1');
-  
-  res.json({
-    step: 'Connect Networks',
+    action: 'List Networks',
     success: result.success,
-    message: result.success 
-      ? '✅ Container c1 successfully connected to network2!' 
-      : '❌ Failed to connect networks',
-    details: [result]
+    details: result.output
   });
 });
 
-// API Endpoint: Test Communication (after connection - should succeed)
-app.post('/api/test-communication', (req, res) => {
-  log('Testing communication after connection...');
+// ===== CONTAINER OPERATIONS =====
+
+// Create Container
+app.post('/api/create-container', (req, res) => {
+  const { containerName, networkName, image } = req.body;
+  console.log(`📦 Creating container: ${containerName} on network: ${networkName}...`);
   
-  // Only use curl to test communication (should succeed now)
-  const curlResult = runCommand('docker exec c1 curl -s -m 2 http://c2');
+  // Create container without --rm so it persists in Docker Desktop
+  const command = `docker run -d --name ${containerName} --network ${networkName} ${image} tail -f /dev/null`;
+  const result = runCommand(command);
   
-  // Communication working if curl succeeded
-  const communicating = curlResult.success;
+  if (result.success) {
+    // Verify container is running
+    const verifyCmd = `docker ps --filter "name=${containerName}" --format "table {{.Names}}\t{{.Status}}\t{{.Networks}}"`;
+    const verify = runCommand(verifyCmd);
+    console.log(`📌 Container "${containerName}" verification:\n${verify.output}`);
+  }
   
   res.json({
-    step: 'Test Communication (After Connection)',
-    success: communicating,
-    message: communicating 
-      ? '✅ SUCCESS: Containers can now communicate (curl succeeded)!' 
-      : '❌ FAILED: Containers still cannot communicate (curl blocked)',
-    details: {
-      test: { attempted: 'curl c1 to http://c2', result: curlResult.success ? '✅ REACHED (Success)' : '❌ BLOCKED (Failed)' }
-    }
+    action: 'Create Container',
+    container: containerName,
+    network: networkName,
+    success: result.success,
+    message: result.success ? `✅ Container "${containerName}" created and running!` : `❌ Failed to create container`,
+    details: result.output,
+    containerId: result.success ? result.output.substring(0, 12) : null
   });
 });
 
-// API Endpoint: Cleanup
-app.post('/api/cleanup', (req, res) => {
-  log('Cleaning up containers and networks...');
+// Delete Container
+app.post('/api/delete-container', (req, res) => {
+  const { containerName } = req.body;
+  console.log(`🗑️ Deleting container: ${containerName}...`);
   
-  // Stop and remove containers
-  runCommand('docker stop c1 c2 2>nul || echo "Containers not running"');
-  runCommand('docker rm c1 c2 2>nul || echo "Containers not found"');
+  const result = runCommand(`docker rm -f ${containerName}`);
+  res.json({
+    action: 'Delete Container',
+    container: containerName,
+    success: result.success,
+    message: result.success ? `✅ Container "${containerName}" deleted!` : `❌ Failed to delete container`,
+    details: result.output
+  });
+});
+
+// List Containers
+app.get('/api/containers', (req, res) => {
+  console.log('📋 Listing containers...');
+  const result = runCommand('docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Networks}}"');
+  res.json({
+    action: 'List Containers',
+    success: result.success,
+    details: result.output
+  });
+});
+
+// ===== NETWORK CONNECTION OPERATIONS =====
+
+// Connect Container to Network
+app.post('/api/connect-network', (req, res) => {
+  const { containerName, networkName } = req.body;
+  console.log(`🔗 Connecting ${containerName} to ${networkName}...`);
   
-  // Remove networks
-  runCommand('docker network rm network1 2>nul || echo "network1 not found"');
-  runCommand('docker network rm network2 2>nul || echo "network2 not found"');
+  const result = runCommand(`docker network connect ${networkName} ${containerName}`);
+  res.json({
+    action: 'Connect to Network',
+    container: containerName,
+    network: networkName,
+    success: result.success,
+    message: result.success ? `✅ Connected "${containerName}" to "${networkName}"!` : `❌ Failed to connect`,
+    details: result.output
+  });
+});
+
+// ===== COMMUNICATION TESTS =====
+
+// Test Ping (Communication)
+app.post('/api/test-ping', (req, res) => {
+  const { sourceContainer, targetContainer } = req.body;
+  console.log(`🔍 Testing ping from ${sourceContainer} to ${targetContainer}...`);
+  
+  const command = `docker exec ${sourceContainer} ping -c 2 ${targetContainer} 2>&1`;
+  const result = runCommand(command);
   
   res.json({
-    step: 'Cleanup',
+    action: 'Test Ping',
+    source: sourceContainer,
+    target: targetContainer,
+    success: result.success,
+    message: result.success ? `✅ Ping successful - Containers can communicate!` : `❌ Ping failed - Containers isolated`,
+    details: result.output
+  });
+});
+
+// Test DNS Resolution
+app.post('/api/test-dns', (req, res) => {
+  const { sourceContainer, targetContainer } = req.body;
+  console.log(`🔍 Testing DNS resolution from ${sourceContainer} to ${targetContainer}...`);
+  
+  const command = `docker exec ${sourceContainer} nslookup ${targetContainer} 2>&1`;
+  const result = runCommand(command);
+  
+  res.json({
+    action: 'Test DNS',
+    source: sourceContainer,
+    target: targetContainer,
+    success: result.success,
+    message: result.success ? `✅ DNS resolution successful!` : `❌ DNS resolution failed`,
+    details: result.output
+  });
+});
+
+// ===== CLEAN UP =====
+
+// Cleanup All
+app.post('/api/cleanup-all', (req, res) => {
+  console.log('🧹 Cleaning up all containers and networks...');
+  
+  const containers = ['container1', 'container2'];
+  const networks = ['network1', 'network2'];
+  
+  let output = '';
+  let success = true;
+  
+  // Remove specific containers
+  for (const container of containers) {
+    console.log(`🗑️ Removing container: ${container}...`);
+    const result = runCommand(`docker rm -f ${container}`);
+    output += `Container ${container}: ${result.success ? '✅ Removed' : '⚠️ Not found'}\n`;
+  }
+  
+  // Remove specific networks
+  for (const network of networks) {
+    console.log(`🗑️ Removing network: ${network}...`);
+    const result = runCommand(`docker network rm ${network}`);
+    output += `Network ${network}: ${result.success ? '✅ Removed' : '⚠️ Not found'}\n`;
+  }
+  
+  // Also run prune to clean up any remaining unused resources
+  console.log('🧹 Pruning unused resources...');
+  const pruneContainers = runCommand('docker container prune -f');
+  const pruneNetworks = runCommand('docker network prune -f');
+  output += `\nPrune containers: ${pruneContainers.success ? '✅ Done' : '⚠️ Done'}\n`;
+  output += `Prune networks: ${pruneNetworks.success ? '✅ Done' : '⚠️ Done'}\n`;
+  
+  res.json({
+    action: 'Cleanup All',
     success: true,
-    message: '✅ Cleanup completed successfully!',
-    details: 'All containers and networks have been removed'
+    message: `✅ Cleanup completed! All containers and networks removed.`,
+    details: output
   });
-});
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Server is running' });
 });
 
 // Start server
 app.listen(PORT, () => {
-  console.log('\n╔════════════════════════════════════════════╗');
-  console.log('║  Docker Networking Web Controller          ║');
-  console.log('╠════════════════════════════════════════════╣');
-  console.log(`║  🚀 Server running at:                     ║`);
-  console.log(`║     http://localhost:${PORT}                       ║`);
-  console.log('║                                            ║');
-  console.log('║  ⚠️  Make sure Docker is installed and:      ║');
-  console.log('║     - Docker Desktop is running             ║');
-  console.log('║     - Docker daemon is active               ║');
-  console.log('╚════════════════════════════════════════════╝\n');
+  console.log(`\n🌐 Server running at http://localhost:${PORT}`);
+  console.log(`📚 Docker Networking Lab ready!\n`);
 });
