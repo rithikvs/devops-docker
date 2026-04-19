@@ -74,26 +74,20 @@ app.get('/api/networks', (req, res) => {
 
 // Create Container
 app.post('/api/create-container', (req, res) => {
-  const { containerName, networkName, image } = req.body;
+  const { containerName, networkName, image = 'busybox:latest' } = req.body;
   console.log(`📦 Creating container: ${containerName} on network: ${networkName}...`);
   
-  // Create container without --rm so it persists in Docker Desktop
-  const command = `docker run -d --name ${containerName} --network ${networkName} ${image} tail -f /dev/null`;
+  // Use busybox image with sleep infinity to keep container running
+  // This allows docker exec commands to work properly
+  const command = `docker run -d --name ${containerName} --network ${networkName} ${image} sleep infinity`;
   const result = runCommand(command);
-  
-  if (result.success) {
-    // Verify container is running
-    const verifyCmd = `docker ps --filter "name=${containerName}" --format "table {{.Names}}\t{{.Status}}\t{{.Networks}}"`;
-    const verify = runCommand(verifyCmd);
-    console.log(`📌 Container "${containerName}" verification:\n${verify.output}`);
-  }
   
   res.json({
     action: 'Create Container',
     container: containerName,
     network: networkName,
     success: result.success,
-    message: result.success ? `✅ Container "${containerName}" created and running!` : `❌ Failed to create container`,
+    message: result.success ? `✅ Container "${containerName}" created!` : `❌ Failed to create container`,
     details: result.output,
     containerId: result.success ? result.output.substring(0, 12) : null
   });

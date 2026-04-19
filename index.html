@@ -367,7 +367,7 @@
         // Make API call to backend
         async function callAPI(endpoint, data) {
             try {
-                addLog(`📡 Sending request to ${endpoint}...`, 'info');
+                addLog(` Sending request to ${endpoint}...`, 'info');
                 const response = await fetch(`/api/${endpoint}`, {
                     method: 'POST',
                     headers: {
@@ -386,7 +386,7 @@
 
         // Create Department A (Network 1)
         async function createDepartmentA() {
-            addLog('🏢 Creating Department A (Network 1)...', 'warning');
+            addLog(' Creating Department A (Network 1)...', 'warning');
             const result = await callAPI('create-network', { networkName: 'network1' });
             
             if (result.success) {
@@ -395,13 +395,13 @@
                 addLog(`❌ ${result.message}`, 'error');
             }
             if (result.details) {
-                addLog(`📝 Details: ${result.details}`, 'info');
+                addLog(` Details: ${result.details}`, 'info');
             }
         }
 
         // Create Department B (Network 2)
         async function createDepartmentB() {
-            addLog('🏢 Creating Department B (Network 2)...', 'warning');
+            addLog(' Creating Department B (Network 2)...', 'warning');
             const result = await callAPI('create-network', { networkName: 'network2' });
             
             if (result.success) {
@@ -410,7 +410,7 @@
                 addLog(`❌ ${result.message}`, 'error');
             }
             if (result.details) {
-                addLog(`📝 Details: ${result.details}`, 'info');
+                addLog(` Details: ${result.details}`, 'info');
             }
         }
 
@@ -419,18 +419,17 @@
             addLog('👤 Adding Employee 1 (Container 1) to Department A...', 'warning');
             const result = await callAPI('create-container', { 
                 containerName: 'container1', 
-                networkName: 'network1',
-                image: 'alpine'
+                networkName: 'network1'
             });
             
             if (result.success) {
                 addLog(`✅ ${result.message}`, 'success');
-                addLog(`📦 Container ID: ${result.containerId}`, 'info');
+                addLog(` Container ID: ${result.containerId}`, 'info');
             } else {
                 addLog(`❌ ${result.message}`, 'error');
             }
             if (result.details) {
-                addLog(`📝 Details: ${result.details}`, 'info');
+                addLog(` Details: ${result.details}`, 'info');
             }
         }
 
@@ -439,43 +438,42 @@
             addLog('👤 Adding Employee 2 (Container 2) to Department B...', 'warning');
             const result = await callAPI('create-container', { 
                 containerName: 'container2', 
-                networkName: 'network2',
-                image: 'alpine'
+                networkName: 'network2'
             });
             
             if (result.success) {
                 addLog(`✅ ${result.message}`, 'success');
-                addLog(`📦 Container ID: ${result.containerId}`, 'info');
+                addLog(` Container ID: ${result.containerId}`, 'info');
             } else {
                 addLog(`❌ ${result.message}`, 'error');
             }
             if (result.details) {
-                addLog(`📝 Details: ${result.details}`, 'info');
+                addLog(` Details: ${result.details}`, 'info');
             }
         }
 
         // Test Communication Before Connection
         async function testCommunicationBefore() {
-            addLog('🔍 Testing communication between employees (BEFORE connection)...', 'warning');
-            addLog('📊 Expected: Communication should FAIL (containers are isolated)', 'info');
+            addLog(' Testing communication between employees (BEFORE connection)...', 'warning');
+            addLog(' Expected: Communication should FAIL (containers are isolated)', 'info');
             const result = await callAPI('test-ping', { 
                 sourceContainer: 'container1', 
                 targetContainer: 'container2'
             });
             
             if (result.success) {
-                addLog(`✅ ${result.message}`, 'success');
+                addLog(` ${result.message}`, 'success');
             } else {
                 addLog(`❌ ${result.message} - This is expected! Containers are isolated.`, 'warning');
             }
             if (result.details) {
-                addLog(`📝 Details: ${result.details.substring(0, 200)}...`, 'info');
+                addLog(` Details: ${result.details.substring(0, 200)}...`, 'info');
             }
         }
 
         // Connect Departments
         async function connectDepartments() {
-            addLog('🔗 Connecting Department A (Container 1) to Department B (Network 2)...', 'warning');
+            addLog(' Connecting Department A (Container 1) to Department B (Network 2)...', 'warning');
             const result = await callAPI('connect-network', { 
                 containerName: 'container1', 
                 networkName: 'network2'
@@ -483,19 +481,19 @@
             
             if (result.success) {
                 addLog(`✅ ${result.message}`, 'success');
-                addLog('🌉 Departments are now connected! Communication should work now.', 'info');
+                addLog(' Departments are now connected! Communication should work now.', 'info');
             } else {
                 addLog(`❌ ${result.message}`, 'error');
             }
             if (result.details) {
-                addLog(`📝 Details: ${result.details}`, 'info');
+                addLog(` Details: ${result.details}`, 'info');
             }
         }
 
         // Test Communication After Connection
         async function testCommunicationAfter() {
-            addLog('🔍 Testing communication between employees (AFTER connection)...', 'warning');
-            addLog('📊 Expected: Communication should SUCCEED (containers are connected)', 'info');
+            addLog(' Testing communication between employees (AFTER connection)...', 'warning');
+            addLog(' Expected: Communication should SUCCEED (containers are connected)', 'info');
             const result = await callAPI('test-ping', { 
                 sourceContainer: 'container1', 
                 targetContainer: 'container2'
@@ -507,7 +505,7 @@
                 addLog(`❌ ${result.message}`, 'error');
             }
             if (result.details) {
-                addLog(`📝 Details: ${result.details.substring(0, 200)}...`, 'info');
+                addLog(` Details: ${result.details.substring(0, 200)}...`, 'info');
             }
         }
 
@@ -522,9 +520,9 @@
                 addLog(`⚠️ Cleanup completed with some warnings`, 'warning');
             }
             if (result.details) {
-                addLog(`📝 Cleanup Details:\n${result.details}`, 'info');
+                addLog(` Cleanup Details:\n${result.details}`, 'info');
             }
-            addLog('🔄 Ready to start a new demonstration!', 'info');
+            addLog(' Ready to start a new demonstration!', 'info');
         }
     </script>
 </body>
