@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Docker Networking Controller</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Office Network Control Panel</title>
     <style>
         * {
             margin: 0;
@@ -11,452 +11,520 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --info-color: #16a085;
+            --bg-dark: #1a1a1a;
+            --bg-light: #ecf0f1;
+            --text-light: #ffffff;
+            --text-dark: #2c3e50;
+            --border-color: #bdc3c7;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background: #f0f0f0;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #34495e 100%);
+            min-height: 100vh;
+            padding: 0;
+            color: var(--text-dark);
         }
 
         .header {
-            background: #2c2c2c;
-            color: white;
-            padding: 20px 30px;
-            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--text-light);
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
         }
 
         .header h1 {
-            font-size: 1.8em;
-            margin-bottom: 5px;
+            font-size: 2.5em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
 
         .header p {
-            font-size: 0.95em;
-            opacity: 0.8;
+            font-size: 1em;
+            opacity: 0.9;
+            font-weight: 300;
         }
 
-        .container {
+        .main-container {
             display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 20px;
-            max-width: 1200px;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
         .left-panel {
-            background: white;
+            background: var(--text-light);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
             padding: 25px;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: fit-content;
         }
 
         .right-panel {
-            background: white;
+            background: var(--text-light);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
             padding: 25px;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .step {
-            margin-bottom: 20px;
-        }
-
-        .step-title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 0.95em;
-        }
-
-        .step-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .step-inputs.full {
-            grid-template-columns: 1fr;
-        }
-
-        input, select {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            font-size: 0.85em;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: #4CAF50;
-            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background: #45a049;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        .cleanup-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #eee;
-        }
-
-        .cleanup-section button {
-            background: #f44336;
-        }
-
-        .cleanup-section button:hover {
-            background: #da190b;
-        }
-
-        .output-section {
-            height: 100%;
             display: flex;
             flex-direction: column;
         }
 
-        .output-header {
+        .panel-title {
+            font-size: 1.3em;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 15px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        .button-group {
+            margin-bottom: 20px;
+        }
+
+        .button-group-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            padding-left: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            background: var(--secondary-color);
+            color: var(--text-light);
+            border: none;
+            border-radius: 6px;
             font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .output-box {
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.create-network {
+            background: var(--info-color);
+        }
+
+        button.create-container {
+            background: var(--secondary-color);
+        }
+
+        button.test-communication {
+            background: var(--warning-color);
+        }
+
+        button.connect-network {
+            background: var(--success-color);
+        }
+
+        button.cleanup {
+            background: var(--danger-color);
+        }
+
+        .console-output {
             flex: 1;
-            background: #1e1e1e;
-            color: #00ff00;
+            background: var(--bg-dark);
+            border-radius: 8px;
             padding: 15px;
-            border-radius: 3px;
             font-family: 'Courier New', monospace;
-            font-size: 0.85em;
+            font-size: 0.9em;
+            color: #00ff00;
             overflow-y: auto;
-            line-height: 1.5;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            border: 1px solid #333;
-            height: 600px;
             max-height: 600px;
+            line-height: 1.5;
+            border: 1px solid #333;
         }
 
-        .output-box::-webkit-scrollbar {
+        .console-output::-webkit-scrollbar {
             width: 8px;
         }
 
-        .output-box::-webkit-scrollbar-track {
-            background: #2c2c2c;
+        .console-output::-webkit-scrollbar-track {
+            background: #222;
         }
 
-        .output-box::-webkit-scrollbar-thumb {
-            background: #4CAF50;
+        .console-output::-webkit-scrollbar-thumb {
+            background: #555;
             border-radius: 4px;
         }
 
-        .error {
-            color: #ff6b6b;
+        .console-output::-webkit-scrollbar-thumb:hover {
+            background: #777;
         }
 
-        .success {
-            color: #4CAF50;
+        .log-entry {
+            margin-bottom: 8px;
+            word-break: break-word;
         }
 
-        .info {
-            color: #87ceeb;
+        .log-timestamp {
+            color: #888;
+            font-weight: bold;
         }
 
-        @media (max-width: 900px) {
-            .container {
+        .log-success {
+            color: #00ff00;
+        }
+
+        .log-error {
+            color: #ff4444;
+        }
+
+        .log-info {
+            color: #4488ff;
+        }
+
+        .log-warning {
+            color: #ffaa00;
+        }
+
+        .button-group.stress-test {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
                 grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
             }
-            .step-inputs {
-                grid-template-columns: 1fr;
+
+            .left-panel {
+                order: 2;
+            }
+
+            .right-panel {
+                order: 1;
+            }
+
+            .console-output {
+                max-height: 400px;
+            }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-active {
+            background: var(--success-color);
+        }
+
+        .status-inactive {
+            background: var(--danger-color);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
             }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Docker Networking Controller</h1>
-        <p>Test Docker network isolation</p>
+        <h1>🖥️ Smart Office Network Control Panel</h1>
+        <p>Docker Networking Isolation & Communication Demo</p>
     </div>
 
-    <div class="container">
-        <!-- LEFT PANEL -->
+    <div class="main-container">
+        <!-- Left Panel: Control Buttons -->
         <div class="left-panel">
-            <!-- Step 1 -->
-            <div class="step">
-                <div class="step-title">Step 1: Create Networks</div>
-                <button onclick="createNetwork1()" style="background: #2196F3;">Create Network 1</button>
-                <button onclick="createNetwork2()" style="background: #FF9800;">Create Network 2</button>
+            <div class="panel-title"> Network Controls</div>
+
+            <!-- Create Networks Section -->
+            <div class="button-group">
+                <div class="button-group-title">📡 Step 1: Create Networks</div>
+                <button class="create-network" onclick="createDepartmentA()">
+                    Create Department A (Network 1)
+                </button>
+                <button class="create-network" onclick="createDepartmentB()">
+                    Create Department B (Network 2)
+                </button>
             </div>
 
-            <!-- Step 2 -->
-            <div class="step">
-                <div class="step-title">Step 2: Start Containers</div>
-                <button onclick="startContainers()">Start Containers</button>
+            <!-- Create Containers Section -->
+            <div class="button-group">
+                <div class="button-group-title">Step 2: Add Employees (Containers)</div>
+                <button class="create-container" onclick="addEmployee1()">
+                    👤 Add Employee 1 (Container 1)
+                </button>
+                <button class="create-container" onclick="addEmployee2()">
+                    👤 Add Employee 2 (Container 2)
+                </button>
             </div>
 
-            <!-- Step 3 -->
-            <div class="step">
-                <div class="step-title">Step 3: Test Isolation</div>
-                <button onclick="testIsolation()">Test Isolation (Before)</button>
+            <!-- Test Communication Section -->
+            <div class="button-group">
+                <div class="button-group-title">Step 3: Test Communication</div>
+                <button class="test-communication" onclick="testCommunicationBefore()">
+                    ❌ Test Communication (Before Connection)
+                </button>
             </div>
 
-            <!-- Step 4 -->
-            <div class="step">
-                <div class="step-title">Step 4: Connect Networks</div>
-                <button onclick="connectNetworks()">Connect Networks</button>
+            <!-- Connect Networks Section -->
+            <div class="button-group">
+                <div class="button-group-title">Step 4: Connect Departments</div>
+                <button class="connect-network" onclick="connectDepartments()">
+                    Connect Departments
+                </button>
             </div>
 
-            <!-- Step 5 -->
-            <div class="step">
-                <div class="step-title">Step 5: Test Communication</div>
-                <button onclick="testCommunication()">Test Communication (After)</button>
+            <!-- Test Communication After Section -->
+            <div class="button-group">
+                <div class="button-group-title">Step 5: Test Again</div>
+                <button class="test-communication" onclick="testCommunicationAfter()">
+                    Test Communication (After Connection)
+                </button>
             </div>
 
-            <!-- Cleanup -->
-            <div class="cleanup-section">
-                <button onclick="cleanupAll()">Cleanup All</button>
+            <!-- Cleanup Section -->
+            <div class="button-group stress-test">
+                <div class="button-group-title">Cleanup</div>
+                <button class="cleanup" onclick="cleanupAll()">
+                    Cleanup All Resources
+                </button>
             </div>
         </div>
 
-        <!-- RIGHT PANEL -->
+        <!-- Right Panel: Console Output -->
         <div class="right-panel">
-            <div class="output-section">
-                <div class="output-header">Output</div>
-                <div class="output-box" id="output">
-<span class="info">Welcome to Docker Networking Lab!</span>
-
-Follow the steps on the left to:
-1. Create isolated networks
-2. Start containers
-3. Test isolation (will fail)
-4. Connect container to second network
-5. Test communication (will succeed)
-
-Click a button to begin...
-                </div>
+            <div class="panel-title">Live Console Output</div>
+            <div class="console-output" id="console-output">
+                <div class="log-entry"><span class="log-info">[System Ready]</span> Smart Office Network Control Panel initialized</div>
+                <div class="log-entry"><span class="log-info">[System Ready]</span> Click buttons on the left to begin Docker networking demonstration</div>
             </div>
         </div>
     </div>
 
     <script>
-        const output = document.getElementById('output');
-
-        function log(message, type = 'info') {
-            const timestamp = new Date().toLocaleTimeString();
-            const span = document.createElement('span');
-            span.className = type;
-            span.textContent = `[${timestamp}] ${message}\n`;
-            output.appendChild(span);
-            output.scrollTop = output.scrollHeight;
+        // Get current time in HH:MM:SS format
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { hour12: false });
         }
 
-        function clearOutput() {
-            output.innerHTML = '';
+        // Add log entry to console output
+        function addLog(message, type = 'info') {
+            const consoleOutput = document.getElementById('console-output');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            
+            const timestamp = `<span class="log-timestamp">[${getCurrentTime()}]</span>`;
+            const logClass = `log-${type}`;
+            
+            logEntry.innerHTML = `${timestamp} <span class="${logClass}">${message}</span>`;
+            consoleOutput.appendChild(logEntry);
+            
+            // Auto-scroll to bottom
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
         }
 
-        async function apiCall(endpoint, method = 'GET', data = null) {
+        // Make API call to backend
+        async function callAPI(endpoint, data) {
             try {
-                const options = {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' }
-                };
-                if (data) options.body = JSON.stringify(data);
-
-                const response = await fetch(endpoint, options);
+                addLog(`📡 Sending request to ${endpoint}...`, 'info');
+                const response = await fetch(`/api/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
                 const result = await response.json();
                 return result;
             } catch (error) {
-                log(`❌ Error: ${error.message}`, 'error');
-                return { success: false };
+                addLog(`❌ Error: ${error.message}`, 'error');
+                return { success: false, message: error.message };
             }
         }
 
-        async function createNetwork1() {
-            log('Creating Network 1...', 'info');
-
-            const net1 = 'network1';
-
-            // Delete existing network first
-            await apiCall('/api/delete-network', 'POST', { networkName: net1 });
-
-            // Create new network
-            const result1 = await apiCall('/api/create-network', 'POST', { networkName: net1 });
-            if (result1.success) {
-                log(`✅ Network "network1" created`, 'success');
-            } else {
-                log(`❌ Failed to create network "network1"`, 'error');
-            }
-        }
-
-        async function createNetwork2() {
-            log('Creating Network 2...', 'info');
-
-            const net2 = 'network2';
-
-            // Delete existing network first
-            await apiCall('/api/delete-network', 'POST', { networkName: net2 });
-
-            // Create new network
-            const result2 = await apiCall('/api/create-network', 'POST', { networkName: net2 });
-            if (result2.success) {
-                log(`✅ Network "network2" created`, 'success');
-            } else {
-                log(`❌ Failed to create network "network2"`, 'error');
-            }
-        }
-
-        async function createNetworks() {
-            clearOutput();
-            log('Creating networks...', 'info');
-
-            const net1 = document.getElementById('net1').value || 'network1';
-            const net2 = document.getElementById('net2').value || 'network2';
-
-            // Delete existing networks first
-            log('Cleaning up existing networks...', 'info');
-            await apiCall('/api/delete-network', 'POST', { networkName: net1 });
-            await apiCall('/api/delete-network', 'POST', { networkName: net2 });
-
-            // Create new networks
-            const result1 = await apiCall('/api/create-network', 'POST', { networkName: net1 });
-            if (result1.success) {
-                log(`✅ Network "${net1}" created`, 'success');
-            } else {
-                log(`❌ Failed to create network "${net1}"`, 'error');
-            }
-
-            const result2 = await apiCall('/api/create-network', 'POST', { networkName: net2 });
-            if (result2.success) {
-                log(`✅ Network "${net2}" created`, 'success');
-            } else {
-                log(`❌ Failed to create network "${net2}"`, 'error');
-            }
-
-            log('Networks created successfully!', 'success');
-        }
-
-        async function startContainers() {
-            log('Starting containers...', 'info');
-
-            const cont1 = 'container1';
-            const cont2 = 'container2';
-            const net1 = 'network1';
-            const net2 = 'network2';
-
-            // Delete existing containers
-            await apiCall('/api/delete-container', 'POST', { containerName: cont1 });
-            await apiCall('/api/delete-container', 'POST', { containerName: cont2 });
-
-            // Create container 1 on network1
-            const result1 = await apiCall('/api/create-container', 'POST', {
-                containerName: cont1,
-                networkName: net1,
-                image: 'busybox'
-            });
-            if (result1.success) {
-                log(`✅ Container "container1" created on "network1"`, 'success');
-            } else {
-                log(`❌ Failed to create container "container1"`, 'error');
-            }
-
-            // Create container 2 on network2
-            const result2 = await apiCall('/api/create-container', 'POST', {
-                containerName: cont2,
-                networkName: net2,
-                image: 'busybox'
-            });
-            if (result2.success) {
-                log(`✅ Container "container2" created on "network2"`, 'success');
-            } else {
-                log(`❌ Failed to create container "container2"`, 'error');
-            }
-        }
-
-        async function testIsolation() {
-            log('Step 3: Testing isolation...', 'info');
-
-            const cont1 = 'container1';
-            const cont2 = 'container2';
-
-            const result = await apiCall('/api/test-ping', 'POST', {
-                sourceContainer: cont1,
-                targetContainer: cont2
-            });
-
+        // Create Department A (Network 1)
+        async function createDepartmentA() {
+            addLog('🏢 Creating Department A (Network 1)...', 'warning');
+            const result = await callAPI('create-network', { networkName: 'network1' });
+            
             if (result.success) {
-                log(`❌ Ping succeeded (unexpected)`, 'error');
+                addLog(`✅ ${result.message}`, 'success');
             } else {
-                log(`✅ Ping failed (expected - containers isolated)`, 'success');
+                addLog(`❌ ${result.message}`, 'error');
+            }
+            if (result.details) {
+                addLog(`📝 Details: ${result.details}`, 'info');
             }
         }
 
-        async function connectNetworks() {
-            log('Step 4: Connecting container1 to network2...', 'info');
-
-            const cont1 = 'container1';
-            const net2 = 'network2';
-
-            const result = await apiCall('/api/connect-network', 'POST', {
-                containerName: cont1,
-                networkName: net2
-            });
-
+        // Create Department B (Network 2)
+        async function createDepartmentB() {
+            addLog('🏢 Creating Department B (Network 2)...', 'warning');
+            const result = await callAPI('create-network', { networkName: 'network2' });
+            
             if (result.success) {
-                log(`✅ Connected container1 to network2`, 'success');
+                addLog(`✅ ${result.message}`, 'success');
             } else {
-                log(`❌ Failed to connect: ${result.details}`, 'error');
+                addLog(`❌ ${result.message}`, 'error');
+            }
+            if (result.details) {
+                addLog(`📝 Details: ${result.details}`, 'info');
             }
         }
 
-        async function testCommunication() {
-            log('Step 5: Testing communication after connection...', 'info');
-
-            const cont1 = 'container1';
-            const cont2 = 'container2';
-
-            const result = await apiCall('/api/test-ping', 'POST', {
-                sourceContainer: cont1,
-                targetContainer: cont2
+        // Add Employee 1 (Container 1)
+        async function addEmployee1() {
+            addLog('👤 Adding Employee 1 (Container 1) to Department A...', 'warning');
+            const result = await callAPI('create-container', { 
+                containerName: 'container1', 
+                networkName: 'network1',
+                image: 'alpine'
             });
-
+            
             if (result.success) {
-                log(`✅ Ping successful!`, 'success');
-                log(result.details, 'success');
+                addLog(`✅ ${result.message}`, 'success');
+                addLog(`📦 Container ID: ${result.containerId}`, 'info');
             } else {
-                log(`❌ Ping failed`, 'error');
+                addLog(`❌ ${result.message}`, 'error');
+            }
+            if (result.details) {
+                addLog(`📝 Details: ${result.details}`, 'info');
             }
         }
 
+        // Add Employee 2 (Container 2)
+        async function addEmployee2() {
+            addLog('👤 Adding Employee 2 (Container 2) to Department B...', 'warning');
+            const result = await callAPI('create-container', { 
+                containerName: 'container2', 
+                networkName: 'network2',
+                image: 'alpine'
+            });
+            
+            if (result.success) {
+                addLog(`✅ ${result.message}`, 'success');
+                addLog(`📦 Container ID: ${result.containerId}`, 'info');
+            } else {
+                addLog(`❌ ${result.message}`, 'error');
+            }
+            if (result.details) {
+                addLog(`📝 Details: ${result.details}`, 'info');
+            }
+        }
+
+        // Test Communication Before Connection
+        async function testCommunicationBefore() {
+            addLog('🔍 Testing communication between employees (BEFORE connection)...', 'warning');
+            addLog('📊 Expected: Communication should FAIL (containers are isolated)', 'info');
+            const result = await callAPI('test-ping', { 
+                sourceContainer: 'container1', 
+                targetContainer: 'container2'
+            });
+            
+            if (result.success) {
+                addLog(`✅ ${result.message}`, 'success');
+            } else {
+                addLog(`❌ ${result.message} - This is expected! Containers are isolated.`, 'warning');
+            }
+            if (result.details) {
+                addLog(`📝 Details: ${result.details.substring(0, 200)}...`, 'info');
+            }
+        }
+
+        // Connect Departments
+        async function connectDepartments() {
+            addLog('🔗 Connecting Department A (Container 1) to Department B (Network 2)...', 'warning');
+            const result = await callAPI('connect-network', { 
+                containerName: 'container1', 
+                networkName: 'network2'
+            });
+            
+            if (result.success) {
+                addLog(`✅ ${result.message}`, 'success');
+                addLog('🌉 Departments are now connected! Communication should work now.', 'info');
+            } else {
+                addLog(`❌ ${result.message}`, 'error');
+            }
+            if (result.details) {
+                addLog(`📝 Details: ${result.details}`, 'info');
+            }
+        }
+
+        // Test Communication After Connection
+        async function testCommunicationAfter() {
+            addLog('🔍 Testing communication between employees (AFTER connection)...', 'warning');
+            addLog('📊 Expected: Communication should SUCCEED (containers are connected)', 'info');
+            const result = await callAPI('test-ping', { 
+                sourceContainer: 'container1', 
+                targetContainer: 'container2'
+            });
+            
+            if (result.success) {
+                addLog(`✅ ${result.message} - SUCCESS! Containers can now communicate!`, 'success');
+            } else {
+                addLog(`❌ ${result.message}`, 'error');
+            }
+            if (result.details) {
+                addLog(`📝 Details: ${result.details.substring(0, 200)}...`, 'info');
+            }
+        }
+
+        // Cleanup All Resources
         async function cleanupAll() {
-            if (!confirm('Delete all containers and networks?')) return;
-
-            log('Cleaning up all resources...', 'info');
-
-            const result = await apiCall('/api/cleanup-all', 'POST');
+            addLog('🧹 Starting cleanup of all Docker resources...', 'warning');
+            const result = await callAPI('cleanup-all', {});
+            
             if (result.success) {
-                log('✅ Cleanup completed!', 'success');
+                addLog(`✅ ${result.message}`, 'success');
             } else {
-                log('⚠️ Cleanup finished with warnings', 'info');
+                addLog(`⚠️ Cleanup completed with some warnings`, 'warning');
             }
+            if (result.details) {
+                addLog(`📝 Cleanup Details:\n${result.details}`, 'info');
+            }
+            addLog('🔄 Ready to start a new demonstration!', 'info');
         }
     </script>
 </body>

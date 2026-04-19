@@ -1,16 +1,13 @@
 {
   "name": "docker-networking",
   "version": "1.0.0",
-  "description": "Docker networking with isolated NGINX containers",
+  "description": "Smart Office Network Control Panel - Docker Networking Isolation & Communication Demo",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "stop": "docker-compose down",
-    "logs": "docker-compose logs -f",
-    "status": "docker-compose ps"
+    "dev": "node server.js"
   },
-  "keywords": ["docker", "networking", "nginx"],
+  "keywords": ["docker", "networking", "isolation", "containers"],
   "author": "",
   "license": "MIT",
   "dependencies": {
